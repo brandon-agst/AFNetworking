@@ -348,7 +348,14 @@ expectedTotalBytes:(int64_t)expectedTotalBytes {
     NSParameterAssert(task);
     NSParameterAssert(delegate);
 
-    [task addObserver:self forKeyPath:NSStringFromSelector(@selector(state)) options:(NSKeyValueObservingOptions)(NSKeyValueObservingOptionOld |NSKeyValueObservingOptionNew) context:AFTaskStateChangedContext];
+    // DISCUSSION:
+    // https://github.com/AFNetworking/AFNetworking/issues/1477
+    // Apple: https://devforums.apple.com/message/912794#912794
+    // Fix: https://github.com/lordkev/AFNetworking/commit/7507ad0c935a48970d2a0a4aeeac7f9e852524cf
+
+    // To fix KVO crashes due to buggy KVO implementation in NSURLSessionTask
+    // TODO: more elegant solution that leaves KVO enabled
+    //[task addObserver:self forKeyPath:NSStringFromSelector(@selector(state)) options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:AFTaskStateChangedContext];
     [self.lock lock];
     self.mutableTaskDelegatesKeyedByTaskIdentifier[@(task.taskIdentifier)] = delegate;
     [self.lock unlock];
@@ -420,7 +427,9 @@ expectedTotalBytes:(int64_t)expectedTotalBytes {
 - (void)removeDelegateForTask:(NSURLSessionTask *)task {
     NSParameterAssert(task);
 
-    [task removeObserver:self forKeyPath:NSStringFromSelector(@selector(state)) context:AFTaskStateChangedContext];
+    // To fix KVO crashes due to buggy KVO implementation in NSURLSessionTask
+    // TODO: more elegant solution that leaves KVO enabled
+    //[task removeObserver:self forKeyPath:NSStringFromSelector(@selector(state)) context:AFTaskStateChangedContext];
     [self.lock lock];
     [self.mutableTaskDelegatesKeyedByTaskIdentifier removeObjectForKey:@(task.taskIdentifier)];
     [self.lock unlock];
@@ -736,9 +745,9 @@ didBecomeInvalidWithError:(NSError *)error
 
     [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
         NSArray *tasks = [@[dataTasks, uploadTasks, downloadTasks] valueForKeyPath:@"@unionOfArrays.self"];
-        for (NSURLSessionTask *task in tasks) {
-            [task removeObserver:self forKeyPath:NSStringFromSelector(@selector(state)) context:AFTaskStateChangedContext];
-        }
+//        for (NSURLSessionTask *task in tasks) {
+//            [task removeObserver:self forKeyPath:NSStringFromSelector(@selector(state)) context:AFTaskStateChangedContext];
+//        }
 
         [self removeAllDelegates];
     }];
