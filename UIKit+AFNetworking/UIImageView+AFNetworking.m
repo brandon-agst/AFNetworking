@@ -150,14 +150,15 @@
                 if (success) {
                     success(urlRequest, operation.response, responseObject);
                 } else if (responseObject) {
-                    [UIView transitionWithView:strongSelf
-                                      duration:0.3
-                                       options:UIViewAnimationOptionTransitionCrossDissolve
-                                    animations:^{
-                                            strongSelf.image = responseObject;
-                                    } completion:^(BOOL finished) {
-                                        //
-                                    }];
+                    [UIView
+                     transitionWithView:strongSelf
+                     duration:0.3
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                     animations:^{
+                         strongSelf.image = responseObject;
+                     } completion:^(BOOL finished) {
+                         //
+                     }];
 //                    strongSelf.image = responseObject;
                 }
 
