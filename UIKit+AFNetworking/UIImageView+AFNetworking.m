@@ -147,19 +147,21 @@
         [self.af_imageRequestOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
             if ([[urlRequest URL] isEqual:[strongSelf.af_imageRequestOperation.request URL]]) {
-                if (success) {
-                    success(urlRequest, operation.response, responseObject);
-                } else if (responseObject) {
-                    [UIView
-                     transitionWithView:strongSelf
-                     duration:0.3
-                     options:UIViewAnimationOptionTransitionCrossDissolve
-                     animations:^{
-                         strongSelf.image = responseObject;
-                     } completion:^(BOOL finished) {
-                         //
-                     }];
-//                    strongSelf.image = responseObject;
+                if ([responseObject isKindOfClass:[UIImage class]]) {
+                    if (success) {
+                        success(urlRequest, operation.response, responseObject);
+                    } else if (responseObject) {
+                        [UIView
+                         transitionWithView:strongSelf
+                         duration:0.3
+                         options:UIViewAnimationOptionTransitionCrossDissolve
+                         animations:^{
+                             strongSelf.image = responseObject;
+                         } completion:^(BOOL finished) {
+                             //
+                         }];
+//                        strongSelf.image = responseObject;
+                    }
                 }
 
                 if (operation == strongSelf.af_imageRequestOperation){
