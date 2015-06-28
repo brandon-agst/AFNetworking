@@ -129,6 +129,9 @@
 
     UIImage *cachedImage = [[[self class] sharedImageCache] cachedImageForRequest:urlRequest];
     if (cachedImage) {
+        if (![cachedImage isKindOfClass:[UIImage class]])
+            return;
+
         if (success) {
             success(nil, nil, cachedImage);
         } else {
